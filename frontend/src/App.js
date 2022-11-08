@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "../src/pages/dashboard/Dashboard";
-import Signup from "../src/pages/auth/Signup";
-import Login from "../src/pages/auth/Login";
+import Dashboard from "./pages/dashboard/Dashboard";
+import Signup from "./pages/auth/Signup";
+import Login from "./pages/auth/Login";
 import Navbar from "./components/navbar/Navbar";
 import ProtectRoute from "./components/protectRoute/ProtectRoute";
 import UpdatePassword from "./pages/auth/UpdatePassword";
@@ -9,7 +9,6 @@ import UpdatePassword from "./pages/auth/UpdatePassword";
 const App = () => {
   return (
     <BrowserRouter>
-      <Navbar />
       <Routes>
         <Route
           exact

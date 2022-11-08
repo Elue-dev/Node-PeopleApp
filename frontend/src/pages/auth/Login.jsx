@@ -6,8 +6,8 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { MdOutlineMail } from "react-icons/md";
 import axios from "axios";
 import "./auth.scss";
-import { useDispatch, useSelector } from "react-redux";
-import { getUser, SET_ACTIVE_USER } from "../../redux/authSlice";
+import { useDispatch } from "react-redux";
+import { SET_ACTIVE_USER } from "../../redux/authSlice";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -18,7 +18,6 @@ export default function SignUp() {
   const [visible, setVisible] = useState(false);
   const passwordRef = useRef();
   const emailRef = useRef(null);
-  // const user = useSelector(getUser);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -48,7 +47,7 @@ export default function SignUp() {
         setMessage("Login Successful!. Redirecting to Dashboard...");
         setTimeout(() => {
           navigate("/");
-        }, 1300);
+        }, 2000);
       }
       setLoading(false);
     } catch (error) {

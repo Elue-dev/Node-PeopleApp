@@ -54,8 +54,8 @@ export default function UpdatePassword() {
       res = await axios.post("api/auth/update-password", data);
       if (res.data.status === "success") {
         setValues(initialState);
-        setMessage("Password updated Successfully! Redirecting to Login...");
-        setTimeout(() => navigate("/login"), 2000);
+        setMessage("Password Updated Successfully! Redirecting to Login...");
+        setTimeout(() => navigate("/login"), 3000);
       } else {
         setError(res.data);
       }
