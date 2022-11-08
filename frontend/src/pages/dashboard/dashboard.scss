@@ -1,0 +1,5 @@
+@import "../../utils/global.scss";
+
+.dashboard {
+  @include centerItem();
+}
