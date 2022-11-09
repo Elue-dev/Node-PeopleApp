@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
@@ -38,6 +39,9 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   {
     timestamps: true,
@@ -54,6 +58,43 @@ userSchema.pre("save", async function (next) {
 
   next();
 });
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // console.log({ resetToken }, this.passwordResetToken);
+
+  //expires after 10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  //return plain text token that we would send as an email (unencrypted). So we send the user the unencrypted one and we have the encrypted one in our database.
+  return resetToken;
+};
+
+// for the reset password
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  //remember we checked if the user has changed its password in the controller, so we minus 1second, because sometimes it happend that the token is created some seconds before the changed password timestamp has been created, so it would put the passwordChangedAt 1 second in the past and that's not a problem
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return JWTTimeStamp < changedTimestamp;
+  }
+  return false;
+};
 
 userSchema.methods.correctPassword = async function (
   candidatePassword,

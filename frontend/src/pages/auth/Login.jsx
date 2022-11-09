@@ -108,6 +108,9 @@ export default function SignUp() {
               </div>
             </label>
             <br />
+            <Link to="/forgot-password" className="f__password">
+              Forgot Password?
+            </Link>
             {loading ? (
               <button type="button" disabled>
                 <BeatLoader loading={loading} size={10} color={"#fff"} />

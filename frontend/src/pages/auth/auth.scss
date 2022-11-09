@@ -45,6 +45,12 @@ main {
           padding: 0.5rem 1rem;
           width: 100%;
         }
+        .f__password {
+          text-align: center;
+          color: #000;
+          text-decoration: underline;
+          padding-bottom: 1rem;
+        }
         .name {
           display: flex;
           grid-template-columns: 1fr 1fr;

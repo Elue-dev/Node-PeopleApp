@@ -7,11 +7,11 @@ const connectDB = require("./config/connectDB");
 
 const app = require("./app");
 
-// app.use(
-//   cors({
-//     origin: "http://localhost:5000",
-//   })
-// );
+app.use(
+  cors({
+    origin: "http://localhost:5000",
+  })
+);
 
 dotenv.config({ path: "./config.env" });
 
