@@ -8,6 +8,7 @@ import UpdatePassword from "./pages/auth/UpdatePassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ProtectAuth from "./components/protectRoute/ProtectAuth";
+import VerifyEmail from "./pages/auth/VerifyEmail";
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const App = () => {
             </ProtectAuth>
           }
         />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/update-password" element={<UpdatePassword />} />
       </Routes>
     </BrowserRouter>

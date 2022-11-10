@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema(
         message: `Passwords do not match`,
       },
     },
+    isVerfied: {
+      type: Boolean,
+      default: false,
+    },
     role: {
       type: String,
       enum: ["user", "admin"],

@@ -1,3 +1,4 @@
+// const path = require("path");
 const crypto = require("crypto");
 const { promisify } = require("util");
 const catchAsync = require("../utils/catchAsync");
@@ -7,8 +8,17 @@ const jwt = require("jsonwebtoken");
 
 const { sendErrorResponse } = require("../utils/response");
 const { mailTransport } = require("../utils/mail");
-const { resetPasswordTemplate, WelcomeMail } = require("../utils/mailTemplate");
+const {
+  resetPasswordTemplate,
+  WelcomeMail,
+  verificationEmail,
+  userVerificationEmail,
+} = require("../utils/mailTemplate");
 const AppError = require("../utils/appError");
+const app = require("../app");
+
+app.set("views", `${__dirname}/../views`);
+app.set("view engine", "ejs");
 
 const generateToken = (id) => {
   let token;
@@ -49,33 +59,37 @@ const createAndSendToken = (user, statusCode, res) => {
 exports.signup = catchAsync(async (req, res) => {
   const { username, email, password, role, confirmPassword } = req.body;
 
-  try {
-    const newUser = await User.create({
-      username,
-      email,
-      password,
-      role,
-      confirmPassword,
-    });
+  const newUser = await User.create({
+    username,
+    email,
+    password,
+    role,
+    confirmPassword,
+  });
 
-    if (!req.body) {
-      return sendErrorResponse(
-        res,
-        400,
-        "Please enter the details of the user you want to sign up with"
-      );
-    }
-    createAndSendToken(newUser, 200, res);
-
-    mailTransport().sendMail({
-      from: "mail@gmail.com",
-      to: email,
-      subject: "Welcome to the People's Family!",
-      html: WelcomeMail(username),
-    });
-  } catch (error) {
-    return sendErrorResponse(res, 400, error.message);
+  if (!req.body) {
+    return sendErrorResponse(
+      res,
+      400,
+      "Please enter the details of the user you want to sign up with"
+    );
   }
+
+  createAndSendToken(newUser, 200, res);
+
+  let token = generateToken(newUser._id);
+
+  mailTransport().sendMail({
+    from: "mail@gmail.com",
+    to: email,
+    subject: "Verify your email address",
+    html: verificationEmail(
+      newUser.username,
+      newUser.email,
+      token,
+      newUser._id
+    ),
+  });
 });
 
 exports.login = catchAsync(async (req, res) => {
@@ -89,6 +103,16 @@ exports.login = catchAsync(async (req, res) => {
 
   if (!user) {
     return sendErrorResponse(res, 400, "Invalid email or password");
+  }
+
+  const token = generateToken(user._id);
+
+  if (!user.isVerfied) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Your email is yet to be verified. Verify your email proceeding",
+      verificationLink: `http://localhost:8000/api/auth/verify-email/${token}/${user._id}`,
+    });
   }
 
   const correctPassword = await bcrypt.compare(password, user.password);
@@ -207,7 +231,60 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save(); //we wont disable validation cuz we need it eg for password confirm
 
   // 3) update changedPasswordAt property for the user
-  // 4) log user in, send jwt to client
 
+  // 4) log user in, send jwt to client
   createAndSendToken(user, 200, res);
+});
+
+exports.verifyUser = catchAsync(async (req, res) => {
+  const correctToken = jwt.verify(req.params.token, process.env.JWT_SECRET);
+
+  if (!correctToken) {
+    return res.status(400).json({
+      status: "fail",
+      message:
+        "Verification token not valid. Use the verification link sent to your email.",
+    });
+  }
+
+  const user = await User.findByIdAndUpdate(req.params.userId, {
+    isVerfied: true,
+  });
+
+  mailTransport().sendMail({
+    from: "mail@gmail.com",
+    to: user.email,
+    subject: "Welcome to the People's Family!",
+    html: WelcomeMail(user.username),
+  });
+
+  await user.save();
+
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  // res.status(200).json({
+  //   status: "success",
+  //   message: "Email verified successfully",
+  // });
+
+  res.render("index");
+});
+
+exports.sendVerificationToken = catchAsync(async (req, res) => {
+  const user = await User.findOne({ email: req.params.email });
+
+  const token = generateToken(user._id);
+
+  mailTransport().sendMail({
+    from: "mail@gmail.com",
+    to: user.email,
+    subject: "Verify your email address",
+    html: verificationEmail(user.username, user.email, token, user._id),
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Verification link has been sent to your email",
+  });
 });

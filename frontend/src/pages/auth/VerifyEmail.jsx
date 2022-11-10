@@ -3,8 +3,10 @@ import { useState, useRef } from "react";
 import { MdOutlineMail } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
+import { useSelector } from "react-redux";
+import { getUser } from "../../redux/authSlice";
 
-export default function ForgotPassword() {
+export default function VerifyEmail() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -13,32 +15,22 @@ export default function ForgotPassword() {
   const passwordRef = useRef();
   const emailRef = useRef(null);
   const navigate = useNavigate();
+  const user = useSelector(getUser);
 
-  const handleResetPasssword = async (e) => {
+  const verifyEmail = async (e) => {
     e.preventDefault();
 
-    setMessage(null);
-    setError(null);
     setLoading(true);
 
-    if (!email) {
-      setError("Please enter your email");
-      window.setTimeout(() => setError(""), 5000);
-      return;
-    }
-
     try {
-      const res = await axios.post("api/auth/forgot-password", {
-        email: email,
-      });
-      if (res.data.status === "success") {
-        setMessage(res.data.message);
-        setToken(res.data.token);
-        setLoading(false);
-        // navigate(`/reset-password/${res.data.token}/${res.data.userId}`);
-      }
+      const response = await axios.get(
+        `api/auth/send-verification-token/${email}`
+      );
+      setMessage(response.data.message);
+      console.log(response);
+      setLoading(false);
     } catch (error) {
-      setError(error.response.data.message);
+      console.log(error);
       setLoading(false);
     }
   };
@@ -48,18 +40,11 @@ export default function ForgotPassword() {
       <main>
         <div className="auth">
           <div className="auth__contents">
-            <h2>Forgot password</h2>
-            {/* <div className="reset__info">
-              <p>
-                If the email goes to your spam folder, click on{" "}
-                <b>'Report as not spam'</b>, this will move the mail from spam
-                to your inbox. then go to your inbox and continue from there.
-              </p>
-            </div> */}
+            <h2>Verify Email</h2>
 
             {error && <p className="error__message">{error}</p>}
             {message && <p className="message">{message}</p>}
-            <form onSubmit={handleResetPasssword}>
+            <form onSubmit={verifyEmail}>
               <label>
                 <span>Email:</span>
                 <div className="auth__icon" style={{ marginBottom: ".4rem" }}>

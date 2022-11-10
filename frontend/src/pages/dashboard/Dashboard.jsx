@@ -20,9 +20,13 @@ export default function Dashboard() {
           )}
           <br />
           <div>
-            <Link to="/update-password" className="update">
-              Update your password
-            </Link>
+            <div className="updates">
+              <Link to="/update-password" className="update">
+                Update your password
+              </Link>
+              {/* show this conditionally, if the user has verified their email */}
+              <button className="update">Verify Email Address</button>
+            </div>
           </div>
         </div>
       </div>

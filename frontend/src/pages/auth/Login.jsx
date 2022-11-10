@@ -6,8 +6,8 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { MdOutlineMail } from "react-icons/md";
 import axios from "axios";
 import "./auth.scss";
-import { useDispatch } from "react-redux";
-import { SET_ACTIVE_USER } from "../../redux/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser, SET_ACTIVE_USER } from "../../redux/authSlice";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -20,6 +20,7 @@ export default function SignUp() {
   const emailRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector(getUser);
 
   useEffect(() => {
     emailRef.current.focus();
@@ -40,9 +41,10 @@ export default function SignUp() {
       setLoading(true);
       const response = await axios.post("api/auth/login", userData);
 
-      dispatch(SET_ACTIVE_USER(response.data.data.user));
-
       if (response.data.status === "success") {
+        dispatch(SET_ACTIVE_USER(response.data.data.user));
+
+        console.log(response.data.data.user);
         localStorage.setItem("token", JSON.stringify(response.data.token));
         setMessage("Login Successful!. Redirecting to Dashboard...");
         setTimeout(() => {
@@ -55,6 +57,18 @@ export default function SignUp() {
       setLoading(false);
     }
   };
+
+  // const verifyEmail = () => {
+  //   try {
+  //     console.log(user);
+  //     const response = axios.get(
+  //       `api/auth/send-verification-token/${user._id}`
+  //     );
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const handlePasswordVisibility = () => {
     setVisible(!visible);
@@ -108,9 +122,14 @@ export default function SignUp() {
               </div>
             </label>
             <br />
-            <Link to="/forgot-password" className="f__password">
-              Forgot Password?
-            </Link>
+            <div>
+              <Link to="/forgot-password" className="f__password">
+                <p>Forgot Password?</p>
+              </Link>
+
+              <Link to="/verify-email">Verify your email</Link>
+            </div>
+
             {loading ? (
               <button type="button" disabled>
                 <BeatLoader loading={loading} size={10} color={"#fff"} />

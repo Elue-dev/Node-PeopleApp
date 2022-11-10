@@ -5,6 +5,11 @@
   div {
     text-align: center;
     margin-top: 1rem;
+    .updates {
+      display: flex;
+      gap: 0.3rem;
+    }
+
     .update {
       @include button();
       background: #fff;

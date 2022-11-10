@@ -108,10 +108,132 @@ exports.WelcomeMail = (username) => {
         </head>
         <body>
           <div class="container">
-            <h3>Welcome on board, ${username}!</h3>
+            <h3>You are officially welcome on board, ${username}!</h3>
             <p>
-             We are glad to have you as part of our community. Ennsure to exolore our website thoroughly to find products and services that best suite your needs.
+             Thank you for verifying your email. We are glad to have you as part of our community. Ensure to exolore our website thoroughly to find products and services that best suit your needs.
             </p>
+  
+            <p>Best Regards,</p>
+            <p>The People's Team</p>
+          </div>
+        </body>
+      </html>
+  
+    `;
+};
+
+exports.verificationEmail = (username, email, token, userId) => {
+  return `
+        <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Document</title>
+  
+          <style>
+            .container {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              background: #333;
+              padding: 1.2rem 1.5rem;
+              color: #fff;
+            }
+            a {
+              text-decoration: none;
+              background-color: #ae8625;
+              color: #fff;
+              border: 1px solid #333;
+              width: 50%;
+              margin-top: 1rem 0;
+              font-size: 1rem;
+              font-weight: 700;
+              padding: 4px 6px;
+              margin: 0 5px 0 0;
+              padding: 0.5rem;
+              border: 1px solid transparent;
+              border-radius: 0.3rem;
+              cursor: pointer;
+              transition: all 0.3s;
+              font-family: "Lato", sans-serif;
+            }
+            p {
+              margin: 2rem 0;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h3>Hi, ${username}!</h3>
+            <p>
+            Please find below, the link to verify your email (${email})
+            </p>
+            <a href="http://localhost:8000/api/auth/verify-email/${token}/${userId}">Verify Email</a>
+  
+            <p>Best Regards,</p>
+            <p>The People's Team</p>
+          </div>
+        </body>
+      </html>
+  
+    `;
+};
+
+exports.userVerificationEmail = (username, token, email, userId) => {
+  return `
+        <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Document</title>
+  
+          <style>
+            .container {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              background: #333;
+              padding: 1.2rem 1.5rem;
+              color: #fff;
+            }
+            a {
+              text-decoration: none;
+              background-color: #ae8625;
+              color: #fff;
+              border: 1px solid #333;
+              width: 50%;
+              margin-top: 1rem 0;
+              font-size: 1rem;
+              font-weight: 700;
+              padding: 4px 6px;
+              margin: 0 5px 0 0;
+              padding: 0.5rem;
+              border: 1px solid transparent;
+              border-radius: 0.3rem;
+              cursor: pointer;
+              transition: all 0.3s;
+              font-family: "Lato", sans-serif;
+            }
+            p {
+              margin: 2rem 0;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h3>Hi, ${username}!</h3>
+            <p>
+            Please find below, the link to verify your email (${email})
+            </p>
+            <a href="http://localhost:8000/api/auth/verify-email/${token}/${userId}">Verify Email</a>
   
             <p>Best Regards,</p>
             <p>The People's Team</p>

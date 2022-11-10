@@ -4,6 +4,8 @@ import { MdOutlineMail } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { REMOVE_ACTIVE_USER } from "../../redux/authSlice";
 
 const initialState = {
   currentPassword: "",
@@ -19,6 +21,7 @@ export default function UpdatePassword() {
   const passwordRef = useRef();
   const emailRef = useRef(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,8 +57,9 @@ export default function UpdatePassword() {
       res = await axios.post("api/auth/update-password", data);
       if (res.data.status === "success") {
         setValues(initialState);
-        setMessage("Password Updated Successfully! Redirecting to Login...");
-        setTimeout(() => navigate("/login"), 3000);
+        setMessage("Password Updated Successfully!");
+        dispatch(REMOVE_ACTIVE_USER());
+        setTimeout(() => navigate("/login"), 2000);
       } else {
         setError(res.data);
       }

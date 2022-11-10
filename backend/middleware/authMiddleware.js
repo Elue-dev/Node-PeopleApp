@@ -28,7 +28,11 @@ exports.protect = catchAsync(async (req, res, next) => {
   const user = await User.findById(decoded.id).select("-password");
 
   if (!user) {
-    sendErrorResponse(res, 404, "The user with this token no longer exists");
+    return sendErrorResponse(
+      res,
+      404,
+      "The user with this token no longer exists"
+    );
   }
 
   req.user = user;
